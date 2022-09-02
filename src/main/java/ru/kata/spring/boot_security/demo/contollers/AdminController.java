@@ -1,5 +1,6 @@
 package ru.kata.spring.boot_security.demo.contollers;
 
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,8 +40,8 @@ public class AdminController {
     }
 
     @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") int id) {
-        userService.edit(id, user);
+    public String update(@ModelAttribute("user") User user) {
+        userService.edit(user);
         return "redirect:/admin/";
     }
 

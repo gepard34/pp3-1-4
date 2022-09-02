@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.contollers;
 
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,9 +22,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public String showUserInfo(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        User user = (User) authentication.getPrincipal();
+    public String showUserInfo(@AuthenticationPrincipal User user, Model model) {
         model.addAttribute("userinfo", userService.findUserById(user.getId()));
         return "user";
     }

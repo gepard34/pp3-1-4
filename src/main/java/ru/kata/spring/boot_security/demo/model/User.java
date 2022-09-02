@@ -1,10 +1,13 @@
 package ru.kata.spring.boot_security.demo.model;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -26,11 +29,17 @@ public class User implements UserDetails {
     @Column
     private String password;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinTable(name="user_roles",
     joinColumns=@JoinColumn(name="user_id"),
     inverseJoinColumns=@JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    public void addRoles(Collection<Role> roleCollection) {
+        roles = new HashSet<>();
+        roles.addAll(roleCollection);
+    }
 
     public User() {
     }
@@ -82,6 +91,7 @@ public class User implements UserDetails {
     public void setPassword(String password) {
         this.password = password;
     }
+
 
     @Override
     public String toString() {

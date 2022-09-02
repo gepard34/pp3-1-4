@@ -9,7 +9,7 @@ public interface UserService extends UserDetailsService {
     User findUserById(int id);
     List<User> allUsers();
     boolean saveUser(User user);
-    void edit(int id, User user);
+    void edit(User user);
 
     public void delete(int id);
 
