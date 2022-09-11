@@ -1,46 +1,61 @@
 package ru.kata.spring.boot_security.demo.dao;
 
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.kata.spring.boot_security.demo.model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-@Component
+@Repository
 public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
 
-    public void create(User user) { //addUser
-        entityManager.persist(user);
+    @Override
+    public List<User> showUsers() {
+        return entityManager.createQuery("SELECT u FROM User u ", User.class).getResultList();
     }
 
-
-    public void edit(User user) { //UpdateUser
-        entityManager.merge(user);
-    }
-
-
-    public void delete(int id) {
-        User userToDelete = entityManager.find(User.class, id);
-        entityManager.remove(userToDelete);
-    }
-
-
-    public User getUser(int id) {
+    @Override
+    public User showById(long id) {
         return entityManager.find(User.class, id);
     }
 
 
-    public List<User> index() {
-        return entityManager.createQuery("FROM User", User.class).getResultList();
+    @Override
+    public void update(long id, User updatedUser) {
+        entityManager.merge(updatedUser);
     }
 
-    public User findByUsername (String username) {
-        return entityManager.createQuery("SELECT u from User u where u.username = :username", User.class)
-                .setParameter("username", username)
+
+    @Override
+    public void delete(Long id) {
+        entityManager.remove(showById(id));
+    }
+
+
+    @Override
+    public void saveUser(User user) {
+        entityManager.persist(user);
+    }
+
+    @Override
+    public void createUser(User user) {
+        entityManager.persist(user);
+    }
+
+
+
+    @Override
+    public User findByUsername(String username) {
+        return (User) entityManager.createQuery("SELECT u FROM User u WHERE u.email = ?1")
+                .setParameter(1, username)
                 .getSingleResult();
     }
+
 }

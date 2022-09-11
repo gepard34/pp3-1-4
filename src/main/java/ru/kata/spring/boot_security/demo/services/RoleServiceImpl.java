@@ -1,22 +1,23 @@
 package ru.kata.spring.boot_security.demo.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import ru.kata.spring.boot_security.demo.dao.RoleDao;
 import ru.kata.spring.boot_security.demo.model.Role;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Set;
 
+@Service
 public class RoleServiceImpl implements RoleService{
-    private final RoleDao roleDao;
+    private RoleDao roleDao;
 
+    @Autowired
     public RoleServiceImpl(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
-    @Override
-    public List<Role> getAllRoles() {
-        return roleDao.getAllRoles();
-    }
 
     @Override
     public Role getRoleById(int id) {
@@ -24,12 +25,30 @@ public class RoleServiceImpl implements RoleService{
     }
 
     @Override
-    public Role findRoleByName(String name) {
-        return roleDao.findRoleByName(name);
+    public Role getRoleByRoleName(String name) {
+        return roleDao.getRoleByRoleName(name);
     }
 
     @Override
-    public Set<Role> getRolesById(List<Integer> roles) {
-        return roleDao.getRolesById(roles);
+    @Transactional
+    public void save(Role role) {
+        roleDao.save(role);
+    }
+
+
+    @Override
+    public void update( Role updatedRole) {
+        roleDao.update(updatedRole);
+    }
+
+
+    @Override
+    public void delete(int id) {
+        roleDao.delete(id);
+    }
+
+    @Override
+    public List<Role> getDemandedRoles() {
+        return roleDao.getDemandedRoles();
     }
 }
