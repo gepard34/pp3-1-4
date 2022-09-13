@@ -45,7 +45,7 @@ public class AdminController {
 
 
 
-    @PostMapping("/save")
+    @PostMapping("/users")
     ResponseEntity<User> createUser(@RequestBody User user) {
         userService.createUser(user);
         return new ResponseEntity<>(user, HttpStatus.OK);
