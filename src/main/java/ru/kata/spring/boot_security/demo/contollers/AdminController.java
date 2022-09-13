@@ -1,6 +1,8 @@
 package ru.kata.spring.boot_security.demo.contollers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -17,8 +19,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Controller
-@RequestMapping("admin")
+@RestController
+@RequestMapping("/api")
 public class AdminController {
     private UserService userService;
     private RoleService roleService;
@@ -31,56 +33,47 @@ public class AdminController {
     }
 
 
-    @GetMapping()
-    public String users(@AuthenticationPrincipal UserDetails userDetails,
-                        Model model){
-        String username = userDetails.getUsername();
-        User user = userService.findByUsername(username);
-        model.addAttribute("user", user);
-        model.addAttribute("users", userService.showUsers());
-        model.addAttribute("newUser", new User());
-        model.addAttribute("roles", roleService.getDemandedRoles());
-        return "admin";
+    @GetMapping("/users")
+    ResponseEntity<List<User>> getUsers() {
+        return new ResponseEntity<>(userService.showUsers(), HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{id}")
+    ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(userService.showById(id), HttpStatus.OK);
     }
 
 
 
     @PostMapping("/save")
-    public String create(@ModelAttribute("user") User newUser,
-                         @RequestParam(name="roles", required = false) String[] roles) {
-        List<Role> roles1 = new ArrayList<>();
-        for (String role: roles) {
-            roles1.add(roleService.getRoleByRoleName(role));
-            newUser.setRoles(roles1);
-        }
-        userService.saveUser(newUser);
-        return "redirect:/admin";
+    ResponseEntity<User> createUser(@RequestBody User user) {
+        userService.createUser(user);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 
 
-    @PatchMapping("/update/{id}")
-    public String update
-            (@ModelAttribute("user") User user, @PathVariable("id") long id,
-             @RequestParam(name="roles", required = false) String[] roles) {
-        List<Role> roles1 = new ArrayList<>();
-        if(roles == null) {
-            user.setRoles((List<Role>) userService.showById(id).getRoles());
-        } else {
-            for (String role: roles) {
-                roles1.add(roleService.getRoleByRoleName(role));
-                user.setRoles(roles1);
-            }
-        }
+    @PatchMapping("/users/{id}")
+    ResponseEntity<User> updateUser(@PathVariable("id") Long id, @RequestBody User user) {
         userService.update(id, user);
-        return "redirect:/admin";
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
 
-    @DeleteMapping("/delete/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    @DeleteMapping("/users/{id}")
+    ResponseEntity<Long> deleteUser(@PathVariable("id") Long id) {
         userService.delete(id);
-        return "redirect:/admin";
+        return new ResponseEntity<>(id, HttpStatus.OK);
+    }
+
+    @GetMapping("/roles/{id}")
+    ResponseEntity<Role> getRoleById(@PathVariable("id") int id) {
+        return new ResponseEntity<>(roleService.getRoleById(id), HttpStatus.OK);
+    }
+
+    @GetMapping("/roles")
+    ResponseEntity<List<Role>> getAllRoles() {
+        return new ResponseEntity<>(roleService.getDemandedRoles(), HttpStatus.OK);
     }
 
 

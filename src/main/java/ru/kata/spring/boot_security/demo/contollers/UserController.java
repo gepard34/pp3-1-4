@@ -15,25 +15,18 @@ import ru.kata.spring.boot_security.demo.services.UserService;
 import ru.kata.spring.boot_security.demo.services.UserServiceImpl;
 
 @Controller
-@RequestMapping("/user")
 public class UserController {
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-    private UserService userServiceImpl;
 
+    private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userServiceImpl,UserDetailsServiceImpl userDetailsServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
 
     @GetMapping()
-    public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails,
-                              Model model){
-        String username = userDetails.getUsername();
-        User user = userServiceImpl.findByUsername(username);
-        model.addAttribute("user", user);
-        return "user";
+    public String getSinglePage(@AuthenticationPrincipal User authUser, Model model) {
+        model.addAttribute("authUser", authUser);
+        return "admin";
     }
 }
