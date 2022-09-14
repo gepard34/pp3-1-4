@@ -27,7 +27,6 @@ public class UserServiceImpl implements UserService {
     private RoleService roleService;
     private ApplicationContext context;
 
-    @Autowired
     public UserServiceImpl(UserDao userDAO, RoleService roleService, ApplicationContext context) {
         this.userDAO = userDAO;
         this.roleService = roleService;
